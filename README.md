@@ -25,7 +25,7 @@ So let's `strace` it:
 
 **Output:** (During reads, after load of the libs)
 
-`
+<pre>
 03:37:53.018796 gettimeofday({tv_sec=1556419073, tv_usec=19018}, NULL) = 0
 03:37:53.019407 gettimeofday({tv_sec=1556419073, tv_usec=29665}, NULL) = 0
 03:37:53.030019 _newselect(5, [3 4], [], [], {tv_sec=2, tv_usec=989352}) = 1 (in [3], left {tv_sec=2, tv_usec=989317})
@@ -50,7 +50,7 @@ So let's `strace` it:
 03:37:53.059903 gettimeofday({tv_sec=1556419073, tv_usec=60103}, NULL) = 0
 03:37:53.069556 _newselect(5, [3 4], [], [], {tv_sec=2, tv_usec=999426}) = 1 (in [3], left {tv_sec=2, tv_usec=999395})
 03:37:53.070241 read(3, "S", 1)         = 1
-`
+</pre>
 
 **Observation**
 
@@ -66,7 +66,7 @@ Lets try the same as step 1 but without the timeout:
 
 **Output:**
 
-`
+<pre>
 03:46:27.967917 _newselect(5, [3 4], [], [], NULL) = 1 (in [3])
 03:46:27.968482 read(3, "1", 1)         = 1
 03:46:27.969207 _newselect(5, [3 4], [], [], NULL) = 1 (in [3])
@@ -98,7 +98,7 @@ Lets try the same as step 1 but without the timeout:
 03:46:28.050670 _newselect(5, [3 4], [], [], NULL) = 1 (in [3])
 03:46:28.051239 read(3, "7", 1)         = 1
 03:46:28.060016 _newselect(5, [3 4], [],) = 1 (in [3])
-`
+</pre>
 
 **Observation:** So now its not checking the with `gettimeofday()` but still reading byte by byte which still causes high CPU when run without strace - apx 45% to 55% CPU as shown in `htop`.
 
@@ -119,7 +119,7 @@ Let's strace it:
 
 **Output:**
 
-`
+<pre>
 03:58:27.120054 read(3, "4,33,05,26,154,18,08,41,312,32,7"..., 256) = 256
 03:58:27.120946 write(1, "read string: 4,33,05,26,154,18,0"..., 217read string: 4,33,05,26,154,18,08,41,312,32,7*7A
 $GAGSV,3,2,09,11,06,061,,15,01,208,,25,13,036,,30,23,287,,7*7A
@@ -145,7 +145,7 @@ $GBGSV,5,5,17,29,17,052,,1*4A
 $GBGSV,5,1,17,02,67,245,,03,77,128,,04,23,094,,05,40,260,,*40
 $GBGSV,5,2,17,06,66,143,,07,40,008,,08,26,145,,09,82,345,,*40
 ) = 229
-`
+</pre>
 
 So this is using the native `read` with a max of 256 and resulting in much less CPU usage! This is what I would expect if I wrote a native C program and reading from the file descriptor.
 
@@ -153,7 +153,8 @@ Now, if we use the 'timeout' again like below:
 `strace -ff -F -tt -x python test_pyserial_readline.py --dev /dev/ttyACM0 --timeout_secs 5 --eval_read_code 'read(256)'`
 
 Output:
-`
+
+<pre>
 04:03:28.111969 _newselect(5, [3 4], [], [], {tv_sec=4, tv_usec=999333}) = 1 (in [3], left {tv_sec=4, tv_usec=999292})
 04:03:28.112825 read(3, ",18,180,,6*6D\r\n$GPGSV,4,3,14,22,"..., 256) = 256
 04:03:28.113494 gettimeofday({tv_sec=1556420608, tv_usec=113735}, NULL) = 0
@@ -179,7 +180,7 @@ $GLGSV,3,3,09,83,28,162,,3*47
 ) = 40
 04:03:28.131229 gettimeofday({tv_sec=1556420608, tv_usec=131535}, NULL) = 0
 04:03:28.131956 gettimeofday({tv_sec=1556420608, tv_usec=132200}, NULL) = 0
-`
+</pre>
 
 CPU Usage is still apx the same so it's ok to use a timeout check here.
 
