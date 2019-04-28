@@ -198,7 +198,8 @@ Let's strace it to see how the `BufferedReader` is using `read()`:
 `strace -ff -F -tt -s 500  python test_pyserial_readline.py --dev /dev/ttyACM0 --timeout_secs None --eval_read_code 'readline(256)' --eval_pyserial_post_setup_code 'io.BufferedReader(serial_obj, buffer_size=256)'`
 
 Output:
-`
+
+<pre>
 04:27:21.161158 _newselect(5, [3 4], [], [], NULL) = 1 (in [3])
 04:27:22.057035 read(3, "$GNRMC,032722.00,A,0641.64224,N,10137.05668,E,0.033,,280419,,,A,V*18\r\n$GNVTG,,T,,M,0.033,N,0.061,K,A*3A\r\n", 256) = 105
 04:27:22.057950 _newselect(5, [3 4], [], [], NULL) = 1 (in [3])
@@ -255,9 +256,9 @@ Output:
 ) = 83
 04:27:22.101148 write(1, "\n", 1
 )       = 1
-`
+</pre>
 
-OK, this seems clean enough! Not sure if the timeout functionality is still there or not though - should be but I'm too lazy to verify that today ;-) - thanks for reading!
+OK, this seems clean enough! Not sure if the timeout functionality is still there or not though - should be but I'm too lazy to verify that today ;-)
 
 
 My humble conclusion
