@@ -4,11 +4,15 @@ pyserial_readline_cpu_usage_reduction
 Summary
 -------
 
-When used in a 'Raspbarry Pi Zero W' - I found that pyserial's `readline()` was using apx 65% CPU usage (as shown in 'htop') for just reading NMEA from a USB GPS/GNSS Receiver Although it worked, it was making the Pi Zero CPU temperature quite high and wasting quite some power. This was observed during R&D of the upcoming edition of my [EcoDroidGPS Bluetooth GPS](https://www.clearevo.com/ecodroidgps) hobby project that would support the [ArduSimple U-blox F9 Dual Frequency + RTK Bluetooth GPS features as well as `GPX`, `NMEA` data logging and U-Blox `U-Center` direct connect via WIFI as well as FTP, SCP log transfer features](https://www.youtube.com/watch?v=0EGkntrZ6mQ).
+When used in a 'Raspbarry Pi Zero W' - I found that pyserial's `readline()` was using apx 65% CPU usage (as shown in 'htop') for reading NMEA from a USB GPS/GNSS Receiver Although it worked, it was making the Pi Zero CPU temperature quite high and wasting quite some power.
+
+This was observed during R&D of the upcoming edition of my [EcoDroidGPS Bluetooth GPS](https://www.clearevo.com/ecodroidgps) hobby project that would support the [ArduSimple U-blox F9 Dual Frequency + RTK Bluetooth GPS features as well as `GPX`, `NMEA` data logging and U-Blox `U-Center` direct connect via WIFI as well as FTP, SCP log transfer features](https://www.youtube.com/watch?v=0EGkntrZ6mQ).
 
 My humble conclusion and solution presented here, **reduced CPU Usage from apx 65% down to apx 5%** - is that pyserial's `readline()` function was reading byte by byte and probably doing some more string/buffer appends that used relatively high CPU power (for the small Pi Zero) and that using `read()` significantly reduced the CPU usage, and that wrapping `io.BufferedReader` would provide the same `readline()` functionality with far less CPU usage. You can skip to the conclusion [here](#my-humble-conclusion).
 
 My humble thanks to [Harald Koenig](https://www.linuxday.at/harald-koenig) for notifying us a while back that he found via `strace` that our USB GPS reader process was reading 'byte by byte' and was therefore inefficient - this very much gave the hint to the final findings and conclusions summarized here.
+
+Full respect and credit to the [`pyserial`](https://github.com/pyserial/pyserial) project authors, they have indeed done a great job and made the most popular python serial library work very well and very simple to use. This humble finding just adds on to its application on lower power GNU/Linux devices.
 
 
 Details
@@ -16,7 +20,7 @@ Details
 
 This repo contains some test code that when used with `strace` would demonstrate and show what it was doing and what workaround helped reduce CPU usage.
 
-Used pyserial version as shown in `pip list` was: `pyserial (3.4)`
+Used pyserial version as shown in `pip list` was: `pyserial (3.4)`. Tested on [Rasbpain GNU/Linux](https://www.raspberrypi.org/downloads/raspbian/) version: 9.8 (stretch).
 
 Make sure you have `strace` installed. (`sudo apt-get install strace`) and have a serial device (like a USB GPS Receiver) connected and populating `/dev/ttyACM0` if you want to try the steps below yourself.
 
