@@ -3,6 +3,8 @@ pyserial_readline_cpu_usage_reduction
 
 When used in a 'Raspbarry Pi Zero W' - I found that pyserial's `readline()` was using way too much CPU percent (as shown in 'htop') - apx 65% CPU usage for just reading NMEA from a USB GPS/GNSS Receiver (during R&D of my [EcoDroidGPS Bluetooth GPS](https://www.clearevo.com/ecodroidgps) hobby project).
 
+My humble conclusion is summarized a the bottom of this page - you can skip to it if you wish to skip the details.
+
 This repo contains some test code that when used with `strace` would demonstrate and show what it was doing and what workaround helped reduce CPU usage.
 
 Used pyserial version as shown in `pip list` was: `pyserial (3.4)`
