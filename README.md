@@ -12,7 +12,7 @@ My humble conclusion and solution presented here, **reduced CPU Usage from apx 6
 
 My humble thanks to [Harald Koenig](https://www.linuxday.at/harald-koenig) for notifying us a while back that he found via `strace` that our USB GPS reader process was reading 'byte by byte' and was therefore inefficient - this very much gave the hint to the final findings and conclusions summarized here.
 
-Full respect and credit to the [`pyserial`](https://github.com/pyserial/pyserial) project authors, they have indeed done a great job and made the most popular python serial library work very well and very simple to use. This humble finding just adds on to its application on lower power GNU/Linux devices.
+Full respect and credit to the [`pyserial`](https://github.com/pyserial/pyserial) project authors, they have indeed done a great job and made the most popular python serial library work very well and very simple to use. This page hopefully adds on to its popularity and application on lower power GNU/Linux devices.
 
 
 Details
