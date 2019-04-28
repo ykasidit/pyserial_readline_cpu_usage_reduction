@@ -4,7 +4,7 @@ pyserial_readline_cpu_usage_reduction
 Summary
 -------
 
-When used in a 'Raspbarry Pi Zero W' - I found that pyserial's `readline()` was using way too much CPU percent (as shown in 'htop') - apx 65% CPU usage for just reading NMEA from a USB GPS/GNSS Receiver (during R&D of the upcoming [new U-blox F9 RTK + GPX logging + U-Center via WIFI bridge edition](https://www.youtube.com/watch?v=0EGkntrZ6mQ) of my [EcoDroidGPS Bluetooth GPS](https://www.clearevo.com/ecodroidgps) hobby project).
+When used in a 'Raspbarry Pi Zero W' - I found that pyserial's `readline()` was using way too much CPU percent (as shown in 'htop') - apx 65% CPU usage for just reading NMEA from a USB GPS/GNSS Receiver (during R&D of the upcoming edition of my [EcoDroidGPS Bluetooth GPS](https://www.clearevo.com/ecodroidgps) hobby project that would support the [ArduSimple U-blox F9 Dual Frequency + RTK Bluetooth GPS features as well as `GPX`, `NMEA` logging and `U-Center` direct connect via WIFI as well as FTP, SCP log transfer features](https://www.youtube.com/watch?v=0EGkntrZ6mQ)).
 
 Although simply using pyserial's `readline()` worked, it was making the Pi Zero CPU temperature quite high and wasting power.
 
