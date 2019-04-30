@@ -8,7 +8,7 @@ When used in a 'Raspbarry Pi Zero W' - I found that pyserial's `readline()` was 
 
 This was observed during R&D of the upcoming edition of my [EcoDroidGPS Bluetooth GPS](https://www.clearevo.com/ecodroidgps) hobby project that would support the [ArduSimple U-blox F9 Dual Frequency + RTK Bluetooth GPS features as well as `GPX`, `NMEA` data logging and U-Blox `U-Center` direct connect via WIFI as well as FTP, SCP log transfer features](https://www.youtube.com/watch?v=0EGkntrZ6mQ).
 
-My humble conclusion and solution presented here, **reduced CPU Usage from apx 65% down to apx 5%** - is that pyserial's `readline()` function was reading byte by byte and probably doing some more string/buffer appends that used relatively high CPU power (for the small Pi Zero) and that using `read()` significantly reduced the CPU usage, and that wrapping `io.BufferedReader` would provide the same `readline()` functionality with far less CPU usage. You can skip to the conclusion [here](#my-humble-conclusion).
+My humble conclusion and solution presented here, **reduced CPU Usage from apx 65% down to less than 5%** - is that pyserial's `readline()` function was reading byte by byte and probably doing some more string/buffer appends that used relatively high CPU power (for the small Pi Zero) and that using `read()` significantly reduced the CPU usage, and that wrapping `io.BufferedReader` would provide the same `readline()` functionality with far less CPU usage. You can skip to the conclusion [here](#my-humble-conclusion).
 
 My humble thanks to [Harald Koenig](https://www.linuxday.at/harald-koenig) for notifying us a while back that he found via `strace` that our USB GPS reader process was reading 'byte by byte' and was therefore inefficient - this very much gave the hint to the final findings and conclusions summarized here.
 
@@ -274,13 +274,13 @@ Output:
 )       = 1
 </pre>
 
-OK, this seems clean enough! Not sure if the timeout functionality is still there or not though - should be but I'm too lazy to verify that today ;-)
+OK, this seems clean enough!
 
 
 My humble conclusion
 --------------------
 
-I'd avoid using pyserial's `readline()`, especially in less powerful devices where CPU power is quite limited, I'd use its `read()` function instead, and if we really need `readline()` we could use `io.BufferedReader` to wrap over the pyserial object where total CPU usage dropped from apx 60% to apx 5% in the Raspberry Pi Zero W (or write a buffering and `\n` splitter function if you like of course...).
+I'd avoid using pyserial's `readline()`, especially in less powerful devices where CPU power is quite limited, I'd use its `read()` function instead, and if we really need `readline()` we could use `io.BufferedReader` to wrap over the pyserial object where total CPU usage dropped from apx 60% to less than 5% (and even less when no 'print' calls) in the Raspberry Pi Zero W (or write a buffering and `\n` splitter function if you like of course...). If you want bigger buffer sizes or readline() max size limits, you can increase both the buffer_size in the bufferedreader and the max size in the readline() and use PySerial's 'timeout' instead - please see its docs its something like timeout None for blocking mode, 0 for async mode, and the rest for real timeout in seconds (float also possible) which seems suitable for my case as I had the bufferedreader that would wrap over it and gets updated in that many seconds and providing the 'complete' lines or parts if no newline in the specified readline() max len param.
 
 Another working method was calling readline() from the piped `stdout` of `subprocess` that called `busybox microcom -s 115200 /dev/ttyACM0` but that created a subprocess and we probably have less control/connection to the direct io or fd should issues arise, or another way would be to write a C .so lib or a Cython .so lib that would do the native reads and readlines but that was a overkill I think as above solution seems already good enough.
 
